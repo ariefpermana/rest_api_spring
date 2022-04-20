@@ -1,10 +1,14 @@
 package com.ariefpermana.user_management.controllers;
 
 import com.ariefpermana.user_management.entities.User;
+import com.ariefpermana.user_management.entities.UserRole;
 import com.ariefpermana.user_management.repositories.UserRepository;
+import com.ariefpermana.user_management.repositories.UserRoleRepository;
+
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserControllers {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> findAll(
@@ -47,6 +53,19 @@ public class UserControllers {
 
     }
 
+    @GetMapping("/roleUser/{roleId}")
+    public ResponseEntity<UserRole> findByIdRole(
+            @PathVariable("roleId") Long id) {
+
+        Optional<UserRole> roleId = userRoleRepository.findById(id);
+
+        if (roleId.isPresent()) {
+            return new ResponseEntity<>(roleId.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @GetMapping("/users/{id}")
     public ResponseEntity<User> findById(
             @PathVariable("id") String id) {
@@ -66,14 +85,13 @@ public class UserControllers {
         try {
             User newUser = new User();
             newUser.setUser_id(user.getUser_id());
-            newUser.setUsername(user.getUsername());
             newUser.setName(user.getName());
-            newUser.setPassword(user.getPassword());
+            newUser.setJenis_kelamin(user.getJenis_kelamin());
+            newUser.setAlamat(user.getAlamat());
             newUser.setEmail(user.getEmail());
-            newUser.setPrivelege(user.getPrivelege());
-            System.out.println("masuk sini");
+            newUser.setRoleId(user.getRoleId());
             newUser.setCreated_on(user.getCreated_on());
-            System.out.println(newUser);
+            newUser.setLastupdated(user.getLastupdated());
             return new ResponseEntity<>(userRepository.save(newUser), HttpStatus.CREATED);
         } catch (Exception e) {
             System.out.println(e);
