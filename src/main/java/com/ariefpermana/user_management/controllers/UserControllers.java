@@ -13,15 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api")
 public class UserControllers {
@@ -31,17 +25,11 @@ public class UserControllers {
     private UserRoleRepository userRoleRepository;
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> findAll(
-            @RequestParam(name = "name",
-                    required = false,
-                    defaultValue = "") String name) {
+    public ResponseEntity<List<User>> findAll() {
         try {
             List<User> users;
-            if (StringUtils.hasText(name)) {
-                users = userRepository.findByNameContaining(name);
-            } else {
-                users = userRepository.findAll();
-            }
+
+            users = userRepository.findAll();
 
             if (users.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -55,7 +43,7 @@ public class UserControllers {
 
     @GetMapping("/roleUser/{roleId}")
     public ResponseEntity<UserRole> findByIdRole(
-            @PathVariable("roleId") Long id) {
+            @PathVariable("roleId") Integer id) {
 
         Optional<UserRole> roleId = userRoleRepository.findById(id);
 
@@ -68,7 +56,7 @@ public class UserControllers {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> findById(
-            @PathVariable("id") String id) {
+            @PathVariable("id") Long id) {
 
         Optional<User> customerData = userRepository.findById(id);
 
@@ -87,9 +75,9 @@ public class UserControllers {
             newUser.setUser_id(user.getUser_id());
             newUser.setName(user.getName());
             newUser.setJenis_kelamin(user.getJenis_kelamin());
-            newUser.setAlamat(user.getAlamat());
             newUser.setEmail(user.getEmail());
-            newUser.setRoleId(user.getRoleId());
+            newUser.setAlamat(user.getAlamat());
+            newUser.setRole_id(user.getRole_id());
             newUser.setCreated_on(user.getCreated_on());
             newUser.setLastupdated(user.getLastupdated());
             return new ResponseEntity<>(userRepository.save(newUser), HttpStatus.CREATED);
@@ -99,40 +87,34 @@ public class UserControllers {
         }
     }
 
-//    @PutMapping("/customers/{id}")
-//    public ResponseEntity<Customer> update(
-//            @PathVariable("id") String id,
-//            @RequestBody Customer customer) {
-//
-//        Optional<Customer> customerData = customerRepository.findById(id);
-//
-//        if (customerData.isPresent()) {
-//            Customer updatedCustomer = customerData.get();
-//            updatedCustomer.setName(customer.getName());
-//            updatedCustomer.setAddress(customer.getAddress());
-//            updatedCustomer.setEmail(customer.getEmail());
-//            updatedCustomer.setPhone(customer.getPhone());
-//            return new ResponseEntity<>(customerRepository.save(updatedCustomer), HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @PutMapping("/users/{user_id}")
+    public ResponseEntity<User> update(
+            @PathVariable("user_id") Long id,
+            @RequestBody User user) {
 
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity<HttpStatus> delete(
-            @PathVariable("user_id") String id) {
-        try {
-            userRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        Optional<User> userData = userRepository.findById(id);
+
+        if (userData.isPresent()) {
+            User updateUser = userData.get();
+            updateUser.setUser_id(user.getUser_id());
+            updateUser.setName(user.getName());
+            updateUser.setJenis_kelamin(user.getJenis_kelamin());
+            updateUser.setEmail(user.getEmail());
+            updateUser.setAlamat(user.getAlamat());
+            updateUser.setRole_id(user.getRole_id());
+            updateUser.setCreated_on(user.getCreated_on());
+            updateUser.setLastupdated(user.getLastupdated());
+            return new ResponseEntity<>(userRepository.save(updateUser), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/customers")
-    public ResponseEntity<HttpStatus> deleteAll() {
+    @DeleteMapping("/users/{user_id}")
+    public ResponseEntity<HttpStatus> delete(
+            @PathVariable("user_id") Long id) {
         try {
-            userRepository.deleteAll();
+            userRepository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -14,8 +14,6 @@ import lombok.Setter;
 public class UserRole implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "serial")
-    private Long roleId;
+    private Integer role_Id;
     private String role_name;
 }

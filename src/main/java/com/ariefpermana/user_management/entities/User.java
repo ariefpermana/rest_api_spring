@@ -22,7 +22,7 @@ public class User implements Serializable {
     private String jenis_kelamin;
     private String alamat;
     private String email;
-    private Long roleId;
+    private Integer role_id;
     private Timestamp created_on;
     private Timestamp lastupdated;
 }
